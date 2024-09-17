@@ -7,11 +7,11 @@
     <title>Document</title>
 </head>
 <style>
-    /* Stylování */
+   
 </style>
 <script>
     window.addEventListener("DOMContentLoaded", (event) => {
-        // URL API, ze které chceš získat data
+       
         const apiBaseUrl = 'http://ajax1.lmsoft.cz/procedure.php?cmd=';
         const apiurl1 = "getSummaryOfDrinks";
         const apiurl2 = "saveDrinks";
@@ -43,7 +43,7 @@
                     const radio = document.createElement("input");
                     radio.type = "radio";
                     radio.name = "user";
-                    radio.value = item.ID; // Používáme ID jako hodnotu
+                    radio.value = item.ID; 
 
                     const label = document.createElement("label");
                     label.textContent = item.name;
@@ -111,7 +111,7 @@
                     form.appendChild(container);
                 });
 
-                // Add submit button
+               
                 const submitButton = document.createElement("button");
                 submitButton.textContent = "Odeslat";
                 submitButton.type = "button";
@@ -128,7 +128,7 @@
             const form = document.getElementById('myForm');
             const formData = new FormData(form);
 
-            // Create query string
+            
             const userId = formData.get("user");
             if (!userId) {
                 alert("Please select a user.");
@@ -142,7 +142,7 @@
                 queryString += `&type[]=${encodeURIComponent(range.value)}`;
             });
 
-            // Send the data
+           
             fetch(apiBaseUrl + apiurl2, {
                 method: 'POST',
                 headers: {
@@ -157,7 +157,7 @@
                     alert("Error: " + data.msg);
                 } else {
                     alert("Success");
-                    // Optionally, reset the form or handle success
+                   
                 }
             })
             .catch(error => {
