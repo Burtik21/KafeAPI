@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    /* Stylování */
+</style>
+<script>
+    window.addEventListener("DOMContentLoaded", (event) => {
+        // URL API, ze které chceš získat data
+        const apiBaseUrl = 'http://ajax1.lmsoft.cz/procedure.php?cmd=';
+        const apiurl1 = "getSummaryOfDrinks";
+        const apiurl2 = "saveDrinks";
+        const apiurl3 = "getTypesList";
+        const apiurl4 = "getPeopleList";
+
+        const username = 'coffe';
+        const password = 'kafe';
+
+        async function getDataPeopleNames() {
+            try {
+                const credentials = btoa(`${username}:${password}`);
+
+                const response = await fetch(apiBaseUrl + apiurl4, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${credentials}`
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`Chyba: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const form = document.getElementById('myForm');
+                const container = document.createElement("div");
+
+                Object.values(data).forEach(item => {
+                    const radio = document.createElement("input");
+                    radio.type = "radio";
+                    radio.name = "user";
+                    radio.value = item.ID; // Používáme ID jako hodnotu
+
+                    const label = document.createElement("label");
+                    label.textContent = item.name;
+
+                    container.appendChild(radio);
+                    container.appendChild(label);
+                    container.appendChild(document.createElement("br"));
+                });
+
+                form.appendChild(container);
+
+            } catch (error) {
+                console.error('Chyba při získávání dat:', error);
+            }
+        }
+
+        async function getDataCoffeNames() {
+            try {
+                const credentials = btoa(`${username}:${password}`);
+
+                const response = await fetch(apiBaseUrl + apiurl1, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${credentials}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`Chyba: ${response.status}`);
+                }
+                const data = await response.json();
+                const form = document.getElementById('myForm');
+                
+                data.forEach(item => {
+                    const container = document.createElement("div");
+                    container.style.display = "flex";
+                    container.style.alignItems = "center";
+                    container.style.flexDirection = "row";
+                    container.style.gap = "10px";
+                    container.style.marginBottom = "10px";
+                    container.style.justifyContent = "space-between";
+                    container.style.width = "300px";
+
+                    const label = document.createElement("label");
+                    label.textContent = item[0];
+                    label.style.width = "90px";
+
+                    const range = document.createElement("input");
+                    range.type = "range";
+                    range.value = 0;
+                    range.min = 0;
+                    range.max = 100;
+                    range.className = "rangeInput";
+
+                    const span = document.createElement("span");
+                    span.textContent = range.value;
+
+                    range.addEventListener("input", () => {
+                        span.textContent = range.value;
+                    });
+
+                    container.appendChild(label);
+                    container.appendChild(range);
+                    container.appendChild(span);
+                    form.appendChild(container);
+                });
+
+                // Add submit button
+                const submitButton = document.createElement("button");
+                submitButton.textContent = "Odeslat";
+                submitButton.type = "button";
+                submitButton.addEventListener("click", submitForm);
+
+                form.appendChild(submitButton);
+
+            } catch (error) {
+                console.error('Chyba při získávání dat:', error);
+            }
+        }
+
+        function submitForm() {
+            const form = document.getElementById('myForm');
+            const formData = new FormData(form);
+
+            // Create query string
+            const userId = formData.get("user");
+            if (!userId) {
+                alert("Please select a user.");
+                return;
+            }
+
+            let queryString = `user=${encodeURIComponent(userId)}`;
+
+            const ranges = document.querySelectorAll(".rangeInput");
+            ranges.forEach(range => {
+                queryString += `&type[]=${encodeURIComponent(range.value)}`;
+            });
+
+            // Send the data
+            fetch(apiBaseUrl + apiurl2, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: queryString,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.msg === -1) {
+                    alert("Error: " + data.msg);
+                } else {
+                    alert("Success");
+                    // Optionally, reset the form or handle success
+                }
+            })
+            .catch(error => {
+                console.error('Chyba při odesílání dat:', error);
+            });
+        }
+
+        getDataPeopleNames();
+        getDataCoffeNames();
+    });
+</script>
+
+<body>
+    <form id="myForm" method="post">
+    </form>
+</body>
+
+</html>
