@@ -34,13 +34,13 @@ public class Main extends JFrame {
         drinksPanel = new JPanel();
         drinksPanel.setLayout(new BoxLayout(drinksPanel, BoxLayout.Y_AXIS));
 
-        // People panel
+        
         JPanel peoplePanel = new JPanel();
         peoplePanel.setLayout(new BoxLayout(peoplePanel, BoxLayout.Y_AXIS));
 
         peopleGroup = new ButtonGroup();
 
-        // Fetch and display people
+        
         try {
             JSONObject peopleData = fetchPeopleData(API_PEOPLE);
             for (String key : peopleData.keySet()) {
@@ -60,7 +60,7 @@ public class Main extends JFrame {
             e.printStackTrace();
         }
 
-        // Drinks panel
+        
         try {
             JSONArray drinksData = fetchDrinksData(API_DRINKS);
             for (int i = 0; i < drinksData.length(); i++) {
@@ -86,7 +86,7 @@ public class Main extends JFrame {
             e.printStackTrace();
         }
 
-        // Submit button
+       
         JButton submitButton = new JButton("Odeslat");
         submitButton.addActionListener(e -> submitData());
 
@@ -95,7 +95,7 @@ public class Main extends JFrame {
         add(submitButton, BorderLayout.SOUTH);
     }
 
-    // Fetch people data from API
+   
     private JSONObject fetchPeopleData(String apiUrl) throws Exception {
         URL url = new URL(API_BASE_URL + "?cmd=" + apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -113,7 +113,7 @@ public class Main extends JFrame {
         return new JSONObject(response.toString());
     }
 
-    // Fetch drinks data from API
+    
     private JSONArray fetchDrinksData(String apiUrl) throws Exception {
         URL url = new URL(API_BASE_URL + "?cmd=" + apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -131,17 +131,17 @@ public class Main extends JFrame {
         return new JSONArray(response.toString());
     }
 
-    // Submit data to the API
+   
     private void submitData() {
         try {
-            // Get selected person ID
+            
             String selectedPersonId = peopleGroup.getSelection().getActionCommand();
 
             if (selectedPersonId == null) {
                 throw new IllegalArgumentException("No person selected");
             }
 
-            // Collect drink data
+            
             StringBuilder query = new StringBuilder();
             query.append("user=").append(URLEncoder.encode(selectedPersonId, "UTF-8"));
 
@@ -152,16 +152,16 @@ public class Main extends JFrame {
                     JLabel drinkLabel = (JLabel) drinkPanel.getComponent(0);
                     JSlider slider = (JSlider) drinkPanel.getComponent(1);
 
-                    // Encode each drink's quantity as a URL parameter
+                    
                     query.append("&type[]=").append(URLEncoder.encode(String.valueOf(slider.getValue()), "UTF-8"));
                 }
             }
 
-            // Print the URL and query string for debugging
+            
             System.out.println("URL: " + API_BASE_URL + "?cmd=" + API_SAVE);
             System.out.println("Query: " + query.toString());
 
-            // Create URL for the POST request
+            
             URL url = new URL(API_BASE_URL + "?cmd=" + API_SAVE);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -170,13 +170,13 @@ public class Main extends JFrame {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setDoOutput(true);
 
-            // Write query data to the request body
+           
             OutputStream os = connection.getOutputStream();
             os.write(query.toString().getBytes("UTF-8"));
             os.flush();
             os.close();
 
-            // Get response
+            
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code: " + responseCode);
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
